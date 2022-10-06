@@ -18,7 +18,7 @@ int main(const int argc, char** argv)
   std::filesystem::path in_path{ argv[2] };
   std::filesystem::path out_path{ argv[3] };
   
-  fx::if_optional(fx::io::read_bytes(in_path), [&](auto& in_bytes) {
+  fx::if_optional(fx::io::read_bytes(in_path), [&](const auto& in_bytes) {
     std::default_random_engine eng;
     eng.seed(std::strtol(argv[4], nullptr, 10));
     std::uniform_int_distribution<int32_t> dist{ 0, 127 };
