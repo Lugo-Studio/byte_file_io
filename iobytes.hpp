@@ -9,10 +9,11 @@
 #include <vector>
 #include <ranges>
 #include <type_traits>
+#include <exception>
 
 namespace fx {
   namespace io {
-    auto read_bytes(const std::filesystem::path& in_path) -> std::optional<std::vector<uint8_t>>
+    [[nodiscard]] auto read_bytes(const std::filesystem::path& in_path) -> std::optional<std::vector<uint8_t>>
     {
       if (std::ifstream in{ in_path, std::ios::binary }; in.is_open()) {
         const std::streamsize size{ static_cast<std::streamsize>(file_size(in_path)) };
@@ -25,18 +26,21 @@ namespace fx {
       return std::nullopt;
     }
     
-    auto write_bytes(const std::filesystem::path& out_path, const std::vector<uint8_t>& bytes)
+    auto write_bytes(const std::filesystem::path& out_path, const std::vector<uint8_t>& bytes) -> bool
     {
       if (std::ofstream out{ out_path, std::ios::binary }; out.is_open()) {
         out.write(reinterpret_cast<const char*>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
+        return true;
       }
+      
+      return false;
     }
   } // io
   
   namespace ranges {
     template<std::ranges::range R>
     auto write_to_file(R&& r, const std::filesystem::path& out_path)
-    -> std::enable_if_t<std::is_same_v<std::ranges::range_value_t<R>, uint8_t>>
+      -> std::enable_if_t<std::is_same_v<std::ranges::range_value_t<R>, uint8_t>>
     {
       auto r_common = r | std::views::common;
       std::vector<uint8_t> v;
@@ -59,8 +63,8 @@ namespace fx {
     struct to_file_fn {
       template<std::ranges::range Rng, path Path>
       requires std::constructible_from<std::decay_t<Path>, Path>
-      constexpr void operator()(Rng&& r, Path out_path) const
-      noexcept(std::is_nothrow_constructible_v<std::decay_t<Path>, Path>)
+      constexpr auto operator()(Rng&& r, Path out_path)
+        const noexcept(std::is_nothrow_constructible_v<std::decay_t<Path>, Path>) -> bool
       {
         auto r_common = r | std::views::common;
         std::vector<uint8_t> v;
@@ -69,13 +73,13 @@ namespace fx {
         }
         v.insert(v.begin(), r_common.begin(), r_common.end());
       
-        fx::io::write_bytes(out_path, v);
+        return fx::io::write_bytes(out_path, v);
       }
     
       template<path Path>
       requires std::constructible_from<std::decay_t<Path>, Path>
-      [[nodiscard]] constexpr auto operator()(Path out_path) const
-      noexcept(std::is_nothrow_constructible_v<std::decay_t<Path>, Path>)
+      [[nodiscard]] constexpr auto operator()(Path out_path)
+        const noexcept(std::is_nothrow_constructible_v<std::decay_t<Path>, Path>)
       {
         return std::ranges::_Range_closure<to_file_fn, decltype(out_path)>{ out_path };
       }
