@@ -14,6 +14,7 @@ int main(const int argc, char** argv)
     std::cerr << "Usage: [encrypt|decrypt] <input_file> <output_file> <encryption_seed_int32>\n";
     return EXIT_FAILURE;
   }
+  
   std::filesystem::path in_path{ argv[2] };
   std::filesystem::path out_path{ argv[3] };
   
