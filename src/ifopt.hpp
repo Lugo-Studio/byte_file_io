@@ -8,7 +8,7 @@
 
 namespace fx {
   template<typename T, typename Callback>
-  auto if_optional(std::optional<T>&& option, Callback&& true_branch) -> bool
+  auto if_opt(std::optional<T>&& option, Callback&& true_branch) -> bool
   {
     if (option.has_value()) {
       std::forward<decltype(true_branch)>(true_branch)(std::forward<decltype(option.value())>(option.value()));

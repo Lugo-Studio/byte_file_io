@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(file_read)
+project(encryption)
 
 # ===================================================
 # CONFIGURATION
@@ -12,7 +12,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   endif()
 endif()
 
-set(TARGET_NAME file_read)
-set(SOURCES main.cpp)
+set(TARGET_NAME encryption)
+set(SOURCES "src/main.cpp")
 add_executable(${TARGET_NAME} ${SOURCES})
-target_compile_features(file_read PRIVATE cxx_std_23)
+target_compile_features(${TARGET_NAME} PRIVATE cxx_std_23)
