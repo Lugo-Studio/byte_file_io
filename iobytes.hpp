@@ -10,7 +10,7 @@
 #include <ranges>
 #include <type_traits>
 
-namespace fx {
+namespace fx::io {
   auto read_file_as_bytes(const std::filesystem::path& in_path) -> std::optional<std::vector<uint8_t>>
   {
     if (std::ifstream in{ in_path, std::ios::binary }; in.is_open()) {
