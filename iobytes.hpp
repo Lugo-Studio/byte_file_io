@@ -31,7 +31,7 @@ namespace fx {
         out.write(reinterpret_cast<const char*>(bytes.data()), static_cast<std::streamsize>(bytes.size()));
       }
     }
-  }
+  } // io
   
   namespace ranges {
     template<std::ranges::range R>
@@ -54,7 +54,7 @@ namespace fx {
     template<class Path>
     concept path = requires(Path& p) {
       std::filesystem::path();
-    };
+    }; // Path concept
   
     struct to_file_fn {
       template<std::ranges::range Rng, path Path>
@@ -79,8 +79,8 @@ namespace fx {
       {
         return std::ranges::_Range_closure<to_file_fn, decltype(out_path)>{ out_path };
       }
-    };
+    }; // to_file_fn
     
     inline constexpr to_file_fn write_bytes;
-  }
+  } // ranges
 } // fx
